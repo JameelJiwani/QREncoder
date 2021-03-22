@@ -1,20 +1,25 @@
 var express = require('express');
+const { promisify } = require('util')
+
 var router = express.Router();
 const axios = require('axios');
+// QRCode generation requirements
+const QRCode = require('qrcode')
+const genDataUrl = promisify(QRCode.toDataURL.bind(QRCode))
 
 /* GET home page. */
 router.get('/', async (req, res, next) => {
-  // res.render('index', { title: 'Express' });
-    try {
-        //   res.send('Hello World!');
-        const response = await axios.get('https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Example');
-        console.log(response);
-        // res.render('index', { title: 'Express', data: response.config.url });
-        res.send(response.config.url);
-    } catch (err) {
-        console.error(err);
-        res.send("Error " + err);
+    const { payload = '' } = req.body
+
+    if (payload === '') {
+        return res
+            .status(422)
+            .json({ err: 'Missing required parameter: "payload"' })
     }
+
+    const dataUrl = await genDataUrl(payload)
+
+    return res.json({ src: dataUrl })
 });
 
 module.exports = router;
