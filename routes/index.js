@@ -7,8 +7,8 @@ const axios = require('axios');
 const QRCode = require('qrcode')
 const genDataUrl = promisify(QRCode.toDataURL.bind(QRCode))
 
-/* GET home page. */
-router.get('/', async (req, res, next) => {
+/* POST home page. */
+router.post('/', async (req, res, next) => {
     const { payload = '' } = req.body
 
     if (payload === '') {
